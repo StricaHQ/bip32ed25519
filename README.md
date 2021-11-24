@@ -24,7 +24,7 @@ yarn add @stricahq/bip32ed25519
 ## Usage Example
 
 ```js
-import { Bip32PrivateKey } from "@strica/bip32ed25519";
+import { Bip32PrivateKey } from "@stricahq/bip32ed25519";
 
 ... // Bip39 entropy from mnemonics
 const rootKey = await Bip32PrivateKey.fromEntropy(entropy);
