@@ -3,6 +3,19 @@
   "version": "1.0.1",
   "description": "Pure javascript implementation of Bip32Ed25519, used for Cardano blockchain key pair.",
   "main": "dist/index.js",
+  "keywords": [
+    "bip32ed25519",
+    "strica",
+    "cardano"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StricaHQ/bip32Ed25519.git"
+  },
+  "bugs": {
+    "url": "https://github.com/StricaHQ/bip32Ed25519/issues"
+  },
+  "homepage": "https://github.com/StricaHQ/bip32Ed25519#readme",
   "scripts": {
     "build": "rm -rf dist && tsc",
     "lint": "node_modules/.bin/eslint src/**/*.ts",
