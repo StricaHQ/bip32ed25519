@@ -1,0 +1,4 @@
+node_modules
+dist
+docs
+src/ed25519e

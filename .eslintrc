@@ -1,0 +1,56 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": ["airbnb-base", "prettier"],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "no-param-reassign": 0,
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
+    "func-names": ["error", "never"],
+    "prettier/prettier": ["error"],
+    "arrow-parens": ["error", "always"],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    "consistent-return": "off",
+    "no-restricted-syntax": 0,
+    "prefer-destructuring": [
+      "error",
+      {
+        "VariableDeclarator": {
+          "array": false,
+          "object": false
+        },
+        "AssignmentExpression": {
+          "array": false,
+          "object": false
+        }
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "no-await-in-loop": 0
+  },
+  "env": {
+    "node": true,
+    "mocha": true,
+    "commonjs": true,
+    "es6": true
+  },
+  "globals": {},
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".ts"]
+      }
+    }
+  }
+}
