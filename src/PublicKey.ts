@@ -1,6 +1,6 @@
-import { hash28 } from './utils';
+import { hash28 } from "./utils";
 
-const EDDSA = require('./ed25519e');
+const EDDSA = require("./ed25519e");
 
 const eddsa = new EDDSA();
 
@@ -20,7 +20,7 @@ export default class PublicKey {
   }
 
   verify(signature: Buffer, data: Buffer) {
-    const keyPair = eddsa.keyFromPublic(this.pubKey.toString('hex'));
-    return keyPair.verify(data.toString('hex'), signature.toString('hex'));
+    const keyPair = eddsa.keyFromPublic(this.pubKey.toString("hex"));
+    return keyPair.verify(data.toString("hex"), signature.toString("hex"));
   }
 }

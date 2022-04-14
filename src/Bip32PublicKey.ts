@@ -1,9 +1,10 @@
 /* eslint-disable no-bitwise */
-import * as BN from 'bn.js';
-import PublicKey from './PublicKey';
-import { hmac512 } from './utils';
+import { Buffer } from "buffer";
+import * as BN from "bn.js";
+import PublicKey from "./PublicKey";
+import { hmac512 } from "./utils";
 
-const EDDSA = require('./ed25519e');
+const EDDSA = require("./ed25519e");
 
 const eddsa = new EDDSA();
 
@@ -30,21 +31,19 @@ export default class Bip32PublicKey {
       data[0] = 0x03;
       i = hmac512(cc, data);
     } else {
-      throw new Error('can not derive hardened public key');
+      throw new Error("can not derive hardened public key");
     }
 
     const chainCode = i.slice(32, 64);
     const zl = z.slice(0, 32);
 
-    const left = new BN(zl.slice(0, 28), 16, 'le').mul(new BN(8));
+    const left = new BN(zl.slice(0, 28), 16, "le").mul(new BN(8));
 
     const p = eddsa.g.mul(left);
-    const pp = eddsa.decodePoint(pk.toString('hex'));
+    const pp = eddsa.decodePoint(pk.toString("hex"));
     const point = pp.add(p);
 
-    return new Bip32PublicKey(
-      Buffer.concat([Buffer.from(eddsa.encodePoint(point)), chainCode])
-    );
+    return new Bip32PublicKey(Buffer.concat([Buffer.from(eddsa.encodePoint(point)), chainCode]));
   }
 
   toPublicKey(): PublicKey {
