@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 
 import { Buffer } from "buffer";
-import * as BN from "bn.js";
+import BN from "bn.js";
 import { pbkdf2 } from "pbkdf2";
 import Bip32PublicKey from "./Bip32PublicKey";
 import PrivateKey from "./PrivateKey";

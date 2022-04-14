@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import { Buffer } from "buffer";
-import * as BN from "bn.js";
+import BN from "bn.js";
 import PublicKey from "./PublicKey";
 import { hmac512 } from "./utils";
 
