@@ -1,5 +1,6 @@
-import { blake2b } from 'blakejs';
-import * as hashJs from 'hash.js';
+import { Buffer } from "buffer";
+import { blake2b } from "blakejs";
+import * as hashJs from "hash.js";
 
 export const hash28 = function (data: Buffer): Buffer {
   const hash = blake2b(data, undefined, 28);

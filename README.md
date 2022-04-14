@@ -15,10 +15,18 @@ Pure javascript implementation of [Bip32Ed25519](https://ieeexplore.ieee.org/doc
 
 ## Installation
 
-Supports nodejs and browser
+### yarn/npm
 
 ```sh
 yarn add @stricahq/bip32ed25519
+```
+
+### Browser
+
+```html
+<script src="[use jsDelivr or Unpkg]"></script>
+
+// access bip32ed25519 global variable
 ```
 
 ## Usage Example

@@ -1,12 +1,13 @@
 /* eslint-disable no-bitwise */
 
-import * as BN from 'bn.js';
-import { pbkdf2 } from 'pbkdf2';
-import Bip32PublicKey from './Bip32PublicKey';
-import PrivateKey from './PrivateKey';
-import { hmac512 } from './utils';
+import { Buffer } from "buffer";
+import * as BN from "bn.js";
+import { pbkdf2 } from "pbkdf2";
+import Bip32PublicKey from "./Bip32PublicKey";
+import PrivateKey from "./PrivateKey";
+import { hmac512 } from "./utils";
 
-const EDDSA = require('./ed25519e');
+const EDDSA = require("./ed25519e");
 
 const eddsa = new EDDSA();
 
@@ -19,7 +20,7 @@ export default class Bip32PrivateKey {
 
   static fromEntropy(entropy: Buffer): Promise<Bip32PrivateKey> {
     return new Promise((resolve, reject) => {
-      pbkdf2('', entropy, 4096, 96, 'sha512', (err, xprv) => {
+      pbkdf2("", entropy, 4096, 96, "sha512", (err, xprv) => {
         if (err) {
           reject(err);
         }
@@ -42,7 +43,7 @@ export default class Bip32PrivateKey {
       const data = Buffer.allocUnsafe(1 + 32 + 4);
       data.writeUInt32LE(index, 1 + 32);
 
-      const keyPair = eddsa.keyFromSecret(kl.toString('hex'));
+      const keyPair = eddsa.keyFromSecret(kl.toString("hex"));
       const vk = Buffer.from(keyPair.pubBytes());
       vk.copy(data, 1);
 
@@ -66,16 +67,16 @@ export default class Bip32PrivateKey {
     const zl = z.slice(0, 32);
     const zr = z.slice(32, 64);
 
-    const left = new BN(kl, 16, 'le')
-      .add(new BN(zl.slice(0, 28), 16, 'le').mul(new BN(8)))
-      .toArrayLike(Buffer, 'le', 32);
-    let right = new BN(kr, 16, 'le')
-      .add(new BN(zr, 16, 'le'))
-      .toArrayLike(Buffer, 'le')
+    const left = new BN(kl, 16, "le")
+      .add(new BN(zl.slice(0, 28), 16, "le").mul(new BN(8)))
+      .toArrayLike(Buffer, "le", 32);
+    let right = new BN(kr, 16, "le")
+      .add(new BN(zr, 16, "le"))
+      .toArrayLike(Buffer, "le")
       .slice(0, 32);
 
     if (right.length !== 32) {
-      right = Buffer.from(right.toString('hex').padEnd(32, '0'), 'hex');
+      right = Buffer.from(right.toString("hex").padEnd(32, "0"), "hex");
     }
 
     const xprv = Buffer.concat([left, right, chainCode]);
@@ -83,7 +84,7 @@ export default class Bip32PrivateKey {
   }
 
   toBip32PublicKey() {
-    const keyPair = eddsa.keyFromSecret(this.xprv.slice(0, 32).toString('hex'));
+    const keyPair = eddsa.keyFromSecret(this.xprv.slice(0, 32).toString("hex"));
     const vk = Buffer.from(keyPair.pubBytes());
     return new Bip32PublicKey(Buffer.concat([vk, this.xprv.slice(64, 96)]));
   }

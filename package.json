@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/StricaHQ/bip32Ed25519#readme",
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "lint": "node_modules/.bin/eslint src/**/*.ts",
-    "lint:fix": "node_modules/.bin/eslint src/**/*.ts --fix",
+    "build": "rm -rf dist && tsc && webpack",
+    "lint": "eslint 'src/**/*.ts'",
+    "lint:fix": "eslint 'src/**/*.ts --fix'",
     "test": "ts-mocha tests/**/*.spec.ts",
     "docs": "rm -rf docs && typedoc"
   },
@@ -48,9 +48,12 @@
     "eslint-plugin-prettier": "^4.0.0",
     "mocha": "^9.0.0",
     "prettier": "^2.3.1",
+    "terser-webpack-plugin": "^5.3.1",
     "ts-mocha": "^8.0.0",
     "typedoc": "^0.22.8",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
   },
   "files": [
     "dist/**/*",
