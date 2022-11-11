@@ -24,9 +24,17 @@ export default class Bip32PrivateKey {
         if (err) {
           reject(err);
         }
-        xprv[0] &= 248;
-        xprv[31] &= 0x1f;
-        xprv[31] |= 64;
+        // As described in [RFC 8032 - 5.1.5](https://tools.ietf.org/html/rfc8032#section-5.1.5)
+        // The lowest three bits of the first octet are cleared
+        // 248 or 0xf8
+        xprv[0] &= 0b11111000;
+        // the highest bit of the last octet is cleared
+        // 63 or 0x3f
+        // or it could be 127 or 0x7f
+        xprv[31] &= 0b00111111;
+        // and the second highest bit of the last octet is set
+        // 64 or 0x40
+        xprv[31] |= 0b01000000;
         resolve(new Bip32PrivateKey(xprv));
       });
     });
