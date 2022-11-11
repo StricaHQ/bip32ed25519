@@ -12,13 +12,25 @@ describe("bip32ed25519", (): void => {
 
     const expectedExtPrivateKeyIndex0 =
       "b88d72f4fd0dec1cb4345adabc42d8bf04324d9e524e4e074362030fa3c8355f0d5e83076d34329f5a7a12fd3eec9b19ec3b3c752249e10bd7bddfe119db68728b42bcede75b29201fd3e2a4cf36d502b7d8ef18ac53e367f6b2b60889b274aa";
+    const expectedHardendedExtPrivateKeyIndex0 =
+      "68c9cef1630d29c1d00b186a06b0430f777b9f0a3eaa4f0a0bd0992ba3c8355fd1c4200a48634bd102ce0da6f1e3a476946b76f5dcce9d8e9544aa0c57787e3eda9ca611899a0fc3bdaf25d13eba6d1dd61bc1fa9dfcc7ad69205de3d9ac49ff";
     const expectedExtPublicKeyIndex0 =
       "62981a8cf80fdf478145e8c172c6d9c4bcd73aa37d378803cb1f70cc197edecb8b42bcede75b29201fd3e2a4cf36d502b7d8ef18ac53e367f6b2b60889b274aa";
+    const expectedHardendedExtPublicKeyIndex0 =
+      "610194b3f168ffa11a16a0ec31a9d91757f3a138d09be2ee1bf7974bef4c833fda9ca611899a0fc3bdaf25d13eba6d1dd61bc1fa9dfcc7ad69205de3d9ac49ff";
 
     const expectedPrivateKeyIndex0 =
       "b88d72f4fd0dec1cb4345adabc42d8bf04324d9e524e4e074362030fa3c8355f0d5e83076d34329f5a7a12fd3eec9b19ec3b3c752249e10bd7bddfe119db6872";
+    const expectedHardendedPrivateKeyIndex0 =
+      "68c9cef1630d29c1d00b186a06b0430f777b9f0a3eaa4f0a0bd0992ba3c8355fd1c4200a48634bd102ce0da6f1e3a476946b76f5dcce9d8e9544aa0c57787e3e";
     const expectedPublicKeyIndex0 =
       "62981a8cf80fdf478145e8c172c6d9c4bcd73aa37d378803cb1f70cc197edecb";
+    const expectedHardendedPublicKeyIndex0 =
+      "610194b3f168ffa11a16a0ec31a9d91757f3a138d09be2ee1bf7974bef4c833f";
+    const expectedPrivateKeyPath =
+      "d8c494b685c225a6103d5431a43897adb383832002a4b3956e30a027abc8355f5be390aaf7918c0f73d638f52a232974ece179ad591ef793d8683e95f0dd9ba7";
+    const expectedPublicKeyPath =
+      "c3f4f4b63d60ca921c029bf7851eaa68ae1a59d3f6f268bf2829c6510a7a76ab";
 
     const message = "a475ccfbd6e91b4a1e1ad7fe2c8ce5d2c52df1641920368f84bdc68b84bdc68b";
     const expectedSig =
@@ -29,9 +41,19 @@ describe("bip32ed25519", (): void => {
       expect(xprv0).eq(expectedExtPrivateKeyIndex0);
     });
 
+    it("generates expected hardended xprv at index 0", () => {
+      const xprv0 = xprv.deriveHardened(0).toBytes().toString("hex");
+      expect(xprv0).eq(expectedHardendedExtPrivateKeyIndex0);
+    });
+
     it("generates expected xpub at index 0", () => {
       const xpub0 = xprv.derive(0).toBip32PublicKey().toBytes().toString("hex");
       expect(xpub0).eq(expectedExtPublicKeyIndex0);
+    });
+
+    it("generates expected hardended xpub at index 0", () => {
+      const xpub0 = xprv.deriveHardened(0).toBip32PublicKey().toBytes().toString("hex");
+      expect(xpub0).eq(expectedHardendedExtPublicKeyIndex0);
     });
 
     it("generates expected privateKey at index 0", () => {
@@ -39,9 +61,29 @@ describe("bip32ed25519", (): void => {
       expect(prv0).eq(expectedPrivateKeyIndex0);
     });
 
+    it("generates expected hardended privateKey at index 0", () => {
+      const prv0 = xprv.deriveHardened(0).toPrivateKey().toBytes().toString("hex");
+      expect(prv0).eq(expectedHardendedPrivateKeyIndex0);
+    });
+
     it("generates expected publicKey at index 0", () => {
       const pub0 = xprv.derive(0).toPrivateKey().toPublicKey().toBytes().toString("hex");
       expect(pub0).eq(expectedPublicKeyIndex0);
+    });
+
+    it("generates expected hardended publicKey at index 0", () => {
+      const pub0 = xprv.deriveHardened(0).toPrivateKey().toPublicKey().toBytes().toString("hex");
+      expect(pub0).eq(expectedHardendedPublicKeyIndex0);
+    });
+
+    it("generates expected privateKey at path m/0'/0", () => {
+      const prv0 = xprv.derivePath("m/0'/0").toPrivateKey().toBytes().toString("hex");
+      expect(prv0).eq(expectedPrivateKeyPath);
+    });
+
+    it("generates expected publicKey at path m/0'/0", () => {
+      const prv0 = xprv.derivePath("m/0'/0").toPrivateKey().toPublicKey().toBytes().toString("hex");
+      expect(prv0).eq(expectedPublicKeyPath);
     });
 
     it("generates expected signature with key at index 0 and verify", () => {

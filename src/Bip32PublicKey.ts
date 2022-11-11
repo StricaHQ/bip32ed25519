@@ -2,7 +2,7 @@
 import { Buffer } from "buffer";
 import BN from "bn.js";
 import PublicKey from "./PublicKey";
-import { hmac512 } from "./utils";
+import { hmac512, HARDENED_OFFSET } from "./utils";
 
 const EDDSA = require("./ed25519e");
 
@@ -24,7 +24,7 @@ export default class Bip32PublicKey {
 
     let z;
     let i;
-    if (index < 0x80000000) {
+    if (index < HARDENED_OFFSET) {
       pk.copy(data, 1);
       data[0] = 0x02;
       z = hmac512(cc, data);
