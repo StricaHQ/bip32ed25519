@@ -14,3 +14,5 @@ export const hmac512 = function (key: Buffer, data: Buffer): Buffer {
     .digest();
   return Buffer.from(digest);
 };
+
+export const HARDENED_OFFSET = 0x80000000;
