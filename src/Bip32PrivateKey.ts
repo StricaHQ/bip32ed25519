@@ -24,9 +24,16 @@ export default class Bip32PrivateKey {
         if (err) {
           reject(err);
         }
-        xprv[0] &= 248;
-        xprv[31] &= 0x1f;
-        xprv[31] |= 64;
+        // The lowest three bits of the first octet are cleared
+        // 248 or 0xf8 or 0b11111000
+        xprv[0] &= 0b11111000;
+        // the highest bit of the last octet is cleared
+        // 31 or 0x1f or 0b00011111
+        // AND the third highest bit is cleared too
+        xprv[31] &= 0b00011111;
+        // and the second highest bit of the last octet is set
+        // 64 or 0x40 or 0b01000000
+        xprv[31] |= 0b01000000;
         resolve(new Bip32PrivateKey(xprv));
       });
     });
