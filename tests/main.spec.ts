@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Bip32PrivateKey } from "../src/index";
+import { Bip32PrivateKey, PrivateKey } from "../src/index";
 
 describe("bip32ed25519", (): void => {
   describe("159ccb8c732a2cf226cc6895618926ff0fb391df", (): void => {
@@ -280,6 +280,16 @@ describe("bip32ed25519", (): void => {
           .toPublicKey()
           .verify(Buffer.from(sig, "hex"), Buffer.from(message, "hex"))
       ).eq(true);
+    });
+
+    it("generates expected public key with ed25519 private key", () => {
+      const pk = new PrivateKey(
+        Buffer.from("b7cbcc113d2fe1c6f97d858c2e512459b36034c67f630749567d8783757394c7", "hex"),
+        false
+      );
+      expect(Buffer.from(pk.toPublicKey().hash()).toString("hex")).eq(
+        "5ca51b304b1f79d92eada8c58c513e969458dcd27ce4f5bc47823ffa"
+      );
     });
   });
 });

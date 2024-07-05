@@ -2,14 +2,23 @@ import { Buffer } from "buffer";
 import PublicKey from "./PublicKey";
 
 const EDDSA = require("./ed25519e");
+const hash = require("hash.js");
 
 const eddsa = new EDDSA();
 
 export default class PrivateKey {
   private privKey: Buffer;
 
-  constructor(privKey: Buffer) {
-    this.privKey = privKey;
+  constructor(privKey: Buffer, extended: Boolean = true) {
+    if (extended) {
+      this.privKey = privKey;
+    } else {
+      let extendedSecret = hash.sha512().update(privKey).digest();
+      extendedSecret[0] &= 0b1111_1000;
+      extendedSecret[31] &= 0b0011_1111;
+      extendedSecret[31] |= 0b0100_0000;
+      this.privKey = extendedSecret;
+    }
   }
 
   toBytes(): Buffer {
