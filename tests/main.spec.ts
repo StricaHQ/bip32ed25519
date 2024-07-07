@@ -281,15 +281,32 @@ describe("bip32ed25519", (): void => {
           .verify(Buffer.from(sig, "hex"), Buffer.from(message, "hex"))
       ).eq(true);
     });
+  });
 
-    it("generates expected public key with ed25519 private key", () => {
-      const pk = new PrivateKey(
-        Buffer.from("b7cbcc113d2fe1c6f97d858c2e512459b36034c67f630749567d8783757394c7", "hex"),
-        false
-      );
-      expect(Buffer.from(pk.toPublicKey().hash()).toString("hex")).eq(
-        "5ca51b304b1f79d92eada8c58c513e969458dcd27ce4f5bc47823ffa"
-      );
+  describe("ed25519", (): void => {
+    describe("b7cbcc113d2fe1c6f97d858c2e512459b36034c67f630749567d8783757394c7", (): void => {
+      let privKey: PrivateKey;
+      before(async () => {
+        privKey = PrivateKey.fromSecretKey(
+          Buffer.from("b7cbcc113d2fe1c6f97d858c2e512459b36034c67f630749567d8783757394c7", "hex")
+        );
+      });
+
+      const expectedPublicKey = "5ca51b304b1f79d92eada8c58c513e969458dcd27ce4f5bc47823ffa";
+
+      const message = "15e7831b12b025a886a21f767f2aeecd5ad3220dd8c9de586284a04c545ecd04";
+      const expectedSig =
+        "6a88cc38cee78d8a2fafb5c8826f6be87686c60472e2a0eaac7576f7a7f51a5eeb0a65b9797975355e80dae1d91974ab59c301bb36edc27af676419ff269a10d";
+
+      it("generates expected public key with ed25519 private key", () => {
+        expect(Buffer.from(privKey.toPublicKey().hash()).toString("hex")).eq(expectedPublicKey);
+      });
+
+      it("generates expected signature with ed25519 private key and verify", () => {
+        const sig = privKey.sign(Buffer.from(message, "hex")).toString("hex");
+        expect(sig).eq(expectedSig);
+        expect(privKey.verify(Buffer.from(sig, "hex"), Buffer.from(message, "hex")));
+      });
     });
   });
 });
