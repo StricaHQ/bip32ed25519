@@ -9,7 +9,7 @@ const eddsa = new EDDSA();
 export default class PrivateKey {
   private privKey: Buffer;
 
-  constructor(privKey: Buffer, extended: Boolean = true) {
+  constructor(privKey: Buffer) {
     this.privKey = privKey;
   }
 
