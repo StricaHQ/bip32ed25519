@@ -5,7 +5,7 @@ import BN from "bn.js";
 import { pbkdf2 } from "pbkdf2";
 import Bip32PublicKey from "./Bip32PublicKey";
 import PrivateKey from "./PrivateKey";
-import { hmac512 } from "./utils";
+import { hmac512, HARDENED_OFFSET } from "./utils";
 
 const EDDSA = require("./ed25519e");
 
@@ -46,7 +46,7 @@ export default class Bip32PrivateKey {
 
     let z;
     let i;
-    if (index < 0x80000000) {
+    if (index < HARDENED_OFFSET) {
       const data = Buffer.allocUnsafe(1 + 32 + 4);
       data.writeUInt32LE(index, 1 + 32);
 
@@ -88,6 +88,26 @@ export default class Bip32PrivateKey {
 
     const xprv = Buffer.concat([left, right, chainCode]);
     return new Bip32PrivateKey(xprv);
+  }
+
+  deriveHardened(index: number) {
+    return this.derive(index + HARDENED_OFFSET);
+  }
+
+  derivePath(path: string) {
+    const splitPath = path.split("/");
+    // @ts-ignore
+    return splitPath.reduce((hdkey, indexStr, i) => {
+      if (i === 0 && indexStr === "m") {
+        return hdkey;
+      }
+      if (indexStr.slice(-1) === `'`) {
+        const index = parseInt(indexStr.slice(0, -1), 10);
+        return hdkey.deriveHardened(index);
+      }
+      const index = parseInt(indexStr, 10);
+      return hdkey.derive(index);
+    }, this);
   }
 
   toBip32PublicKey() {

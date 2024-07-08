@@ -16,6 +16,8 @@ export const hmac512 = function (key: Buffer, data: Buffer): Buffer {
 };
 
 export const sha512 = function (data: Buffer): Buffer {
-  let digest = hashJs.sha512().update(data).digest();
+  const digest = hashJs.sha512().update(data).digest();
   return Buffer.from(digest);
 };
+
+export const HARDENED_OFFSET = 0x80000000;
