@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import { sha512 } from "./utils";
 import PublicKey from "./PublicKey";
 
 const EDDSA = require("./ed25519e");
@@ -10,6 +11,14 @@ export default class PrivateKey {
 
   constructor(privKey: Buffer) {
     this.privKey = privKey;
+  }
+
+  static fromSecretKey(secretKey: Buffer): PrivateKey {
+    let extendedSecret = sha512(secretKey);
+    extendedSecret[0] &= 0b1111_1000;
+    extendedSecret[31] &= 0b0011_1111;
+    extendedSecret[31] |= 0b0100_0000;
+    return new PrivateKey(extendedSecret);
   }
 
   toBytes(): Buffer {
