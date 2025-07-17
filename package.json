@@ -29,12 +29,12 @@
     "blakejs": "^1.1.1",
     "bn.js": "^5.2.0",
     "buffer": "^6.0.3",
-    "chai": "^4.3.4",
     "elliptic": "6.6.1",
     "hash.js": "^1.1.7",
     "pbkdf2": "^3.1.2"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
     "@types/chai": "^4.2.18",
     "@types/elliptic": "^6.4.14",
     "@types/mocha": "^8.2.2",
