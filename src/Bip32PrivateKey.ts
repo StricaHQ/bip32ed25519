@@ -97,7 +97,7 @@ export default class Bip32PrivateKey {
   derivePath(path: string) {
     const splitPath = path.split("/");
     // @ts-ignore
-    return splitPath.reduce((hdkey, indexStr, i) => {
+    return splitPath.reduce<Bip32PrivateKey>((hdkey, indexStr, i) => {
       if (i === 0 && indexStr === "m") {
         return hdkey;
       }
