@@ -1,0 +1,10 @@
+{
+  // src must stay universal, no @types/node, so Buffer/process/global
+  // fails typecheck instead of shipping a browser-broken build.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "types": []
+  },
+  "include": ["src"]
+}

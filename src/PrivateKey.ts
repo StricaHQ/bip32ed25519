@@ -1,43 +1,75 @@
-import { Buffer } from "buffer";
-import { sha512 } from "./utils";
 import PublicKey from "./PublicKey";
+import { bytesArgument } from "./internal/bytes";
+import { expandSeed, isClamped, scalarPublicKey, sign, verify } from "./internal/ed25519";
 
-const EDDSA = require("./ed25519e");
-
-const eddsa = new EDDSA();
-
+/**
+ * An Ed25519 private key in extended form, 64 bytes: the scalar kL, and kR, from which the signing
+ * nonce is derived. `Bip32PrivateKey.toPrivateKey()` gives one, and `PrivateKey.fromSecretKey`
+ * makes one from a 32-byte RFC 8032 secret key, such as a cardano-cli signing key.
+ */
 export default class PrivateKey {
-  private privKey: Buffer;
+  readonly #key: Uint8Array;
 
-  constructor(privKey: Buffer) {
-    this.privKey = privKey;
+  #publicKey?: Uint8Array;
+
+  /** @param privateKey - kL ‖ kR, 64 bytes, copied */
+  constructor(privateKey: Uint8Array) {
+    const key = bytesArgument(privateKey, "PrivateKey: privateKey");
+    if (key.length === 32) {
+      throw TypeError(
+        "PrivateKey expects 64 bytes, got 32: use PrivateKey.fromSecretKey for a 32-byte secret key"
+      );
+    }
+    if (key.length !== 64) throw TypeError(`PrivateKey expects 64 bytes, got ${key.length}`);
+    if (!isClamped(key.subarray(0, 32))) {
+      throw TypeError(
+        "PrivateKey: kL has to have its 3 lowest bits and its highest bit clear, and its second highest bit set"
+      );
+    }
+    this.#key = key.slice();
   }
 
-  static fromSecretKey(secretKey: Buffer): PrivateKey {
-    let extendedSecret = sha512(secretKey);
-    extendedSecret[0] &= 0b1111_1000;
-    extendedSecret[31] &= 0b0011_1111;
-    extendedSecret[31] |= 0b0100_0000;
-    return new PrivateKey(extendedSecret);
+  /**
+   * The key for a 32-byte Ed25519 secret key (RFC 8032), such as a cardano-cli payment signing
+   * key: expanded with SHA-512, so it signs as RFC 8032 Ed25519 does.
+   */
+  static fromSecretKey(secretKey: Uint8Array): PrivateKey {
+    const seed = bytesArgument(secretKey, "PrivateKey.fromSecretKey: secretKey");
+    if (seed.length !== 32) {
+      throw TypeError(`PrivateKey.fromSecretKey expects 32 bytes, got ${seed.length}`);
+    }
+    return new PrivateKey(expandSeed(seed));
   }
 
-  toBytes(): Buffer {
-    return this.privKey;
+  /** A copy of the key's 64 bytes. */
+  toBytes(): Uint8Array {
+    return this.#key.slice();
   }
 
   toPublicKey(): PublicKey {
-    const keyPair = eddsa.keyFromSecret(this.privKey);
-    return new PublicKey(Buffer.from(keyPair.pubBytes()));
+    return new PublicKey(this.#publicKeyBytes());
   }
 
-  sign(data: Buffer): Buffer {
-    const keyPair = eddsa.keyFromSecret(this.privKey);
-    const signature = keyPair.sign(data.toString("hex"));
-    return Buffer.from(signature.toBytes());
+  /** The Ed25519 signature of `message`, 64 bytes. */
+  sign(message: Uint8Array): Uint8Array {
+    return sign(
+      this.#key,
+      this.#publicKeyBytes(),
+      bytesArgument(message, "PrivateKey.sign: message")
+    );
   }
 
-  verify(signature: Buffer, message: Buffer) {
-    const keyPair = eddsa.keyFromSecret(this.privKey);
-    return keyPair.verify(message.toString("hex"), signature.toString("hex"));
+  /** Whether `signature` is this key's signature of `message`, as `PublicKey.verify` decides. */
+  verify(signature: Uint8Array, message: Uint8Array): boolean {
+    return verify(
+      this.#publicKeyBytes(),
+      bytesArgument(message, "PrivateKey.verify: message"),
+      bytesArgument(signature, "PrivateKey.verify: signature")
+    );
+  }
+
+  #publicKeyBytes(): Uint8Array {
+    this.#publicKey ??= scalarPublicKey(this.#key.subarray(0, 32));
+    return this.#publicKey;
   }
 }

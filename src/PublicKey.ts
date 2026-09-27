@@ -1,26 +1,37 @@
-import { hash28 } from "./utils";
+import { bytesArgument } from "./internal/bytes";
+import { verify } from "./internal/ed25519";
+import { blake2b224 } from "./internal/hash";
 
-const EDDSA = require("./ed25519e");
-
-const eddsa = new EDDSA();
-
+/** An Ed25519 public key, 32 bytes. */
 export default class PublicKey {
-  pubKey: Buffer;
+  readonly #key: Uint8Array;
 
-  constructor(pubKey: Buffer) {
-    this.pubKey = pubKey;
+  /** @param publicKey - 32 bytes, copied */
+  constructor(publicKey: Uint8Array) {
+    const key = bytesArgument(publicKey, "PublicKey: publicKey");
+    if (key.length !== 32) throw TypeError(`PublicKey expects 32 bytes, got ${key.length}`);
+    this.#key = key.slice();
   }
 
-  toBytes(): Buffer {
-    return this.pubKey;
+  /** A copy of the key's 32 bytes. */
+  toBytes(): Uint8Array {
+    return this.#key.slice();
   }
 
-  hash(): Buffer {
-    return hash28(this.pubKey);
+  /** The Blake2b-224 hash of the key, 28 bytes: the key hash in Cardano addresses and witnesses. */
+  hash(): Uint8Array {
+    return blake2b224(this.#key);
   }
 
-  verify(signature: Buffer, data: Buffer) {
-    const keyPair = eddsa.keyFromPublic(this.pubKey.toString("hex"));
-    return keyPair.verify(data.toString("hex"), signature.toString("hex"));
+  /**
+   * Whether `signature` is this key's Ed25519 signature of `message`, by the rules of libsodium,
+   * which the Cardano ledger verifies with. A signature that is not 64 bytes is false.
+   */
+  verify(signature: Uint8Array, message: Uint8Array): boolean {
+    return verify(
+      this.#key,
+      bytesArgument(message, "PublicKey.verify: message"),
+      bytesArgument(signature, "PublicKey.verify: signature")
+    );
   }
 }
